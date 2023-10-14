@@ -38,11 +38,78 @@ const App = () => {
   {
     fistName: 'Diassis',
     id: 8,
-  },]
+  },
+  {
+    fistName: 'Nove',
+    id: 9,
+  },
+  ]
+  const posts = [
+    {
+      firstName: 'Allison',
+      lastName: 'Becker',
+      location: 'Centro de Eventos do Ceará, Fortaleza',
+      likes: 1201,
+      comments: 24,
+      bookmarks: 55,
+      id: 1,
+    },
+    {
+      firstName: 'Jorge',
+      lastName: 'Luis',
+      location: 'UNIFOR, Fortaleza',
+      likes: 1622,
+      comments: 64,
+      bookmarks: 25,
+      id: 2,
+    },
+    {
+      firstName: 'Adam',
+      lastName: 'Louis',
+      location: 'Home',
+      likes: 120,
+      comments: 2,
+      bookmarks: 3,
+      id: 3,
+    },
+    {
+      firstName: 'Junior',
+      lastName: 'Marcos',
+      location: 'Centro de Eventos do Ceará, Fortaleza',
+      likes: 1201,
+      comments: 24,
+      bookmarks: 55,
+      id: 4,
+    },
+    {
+      firstName: 'Lord',
+      lastName: 'Vinheteiro',
+      location: 'Centro de Eventos do Ceará, Fortaleza',
+      likes: 1201,
+      comments: 24,
+      bookmarks: 55,
+      id: 5,
+    },
+  ]
   const pageSize = 4
+  const pageSizePosts = 2
   const [pageNumber, setPageNumber] = useState(1)
-  const [isLoading, setisLoading] = useState(false)
-  const [renderedData, setRenderedData] = useState([])
+  const [postPageNumber, setPostPageNumber] = useState(1)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingPost, setIsLoadingPosts] = useState(false)
+  const [renderedData, setRenderedData] = useState(data.slice(0, pageSize))
+  const [renderedDataPosts, setRenderedDataPosts] = useState(posts.slice(0, pageSize))
+
+
+  const pagination = (data, pageNumber, pageSize, posts = false) => {
+    let startIndex = (pageNumber - 1) * pageSize
+    console.log(startIndex, renderedData.length)
+    if (startIndex > data.length) {
+      return []
+    }
+    setPageNumber(pageNumber)
+    return data.slice(startIndex, startIndex + pageSize)
+  }
   return (
     <SafeAreaView>
       <ScrollView>
@@ -58,8 +125,28 @@ const App = () => {
             </View>
           </Pressable>
         </View>
-        <View>
-          <FlatList data={data} renderItem={({item}) => <UserStory firstName={item.fistName}/>}></FlatList>
+        <View style={style.userStoryContainer}>
+          <FlatList
+            keyExtractor={item => item.id.toString()}
+            onEndReachedThreshold={0.5}
+            onEndReached={() => {
+              if (!isLoading) {
+                setIsLoading(true)
+                setRenderedData(prev => [
+                  ...prev,
+                  ...pagination(data, pageNumber + 1, pageSize),
+                ])
+                setIsLoading(false)
+              }
+            }}
+            showsHorizontalScrollIndicator={false}
+            horizontal={true}
+            data={renderedData}
+            renderItem={({ item }) => <UserStory firstName={item.fistName} />}
+          />
+        </View>
+        <View style={style.userPostContainer}>
+
         </View>
       </ScrollView>
     </SafeAreaView>
